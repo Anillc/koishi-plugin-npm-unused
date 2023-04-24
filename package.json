@@ -5,16 +5,24 @@
   "repository": "https://github.com/Anillc/koishi-plugin-npm-unused.git",
   "author": "Anillc <void@anillc.cn>",
   "license": "MIT",
+  "koishi": {
+    "service": {
+      "optional": ["translator"]
+    }
+  },
   "dependencies": {
     "an-array-of-english-words": "^2.0.0",
     "lodash.difference": "^4.5.0",
+    "lodash.sample": "^4.2.1",
     "tar": "^6.1.13"
   },
   "devDependencies": {
     "@types/lodash.difference": "^4.5.7",
+    "@types/lodash.sample": "^4.2.7",
     "@types/tar": "^6.1.4"
   },
   "peerDependencies": {
-    "koishi": "^4.12.5"
+    "koishi": "^4.12.5",
+    "@koishijs/translator": "^1.0.0"
   }
 }
