@@ -1,10 +1,10 @@
 import { Duplex } from 'stream'
 
-export class StringWritable extends Duplex {
-  promise: Promise<string>
-  private resolve: (text: string) => void
-  private reject: (error: Error) => void
-  private result = ''
+export class DummyWriter extends Duplex {
+  promise: Promise<Buffer>
+  reject: (error: Error) => void
+  private resolve: (text: Buffer) => void
+  private chunks: Buffer[] = []
 
   constructor() {
     super()
@@ -12,12 +12,15 @@ export class StringWritable extends Duplex {
       this.resolve = resolve
       this.reject = reject
     })
-    this.on('close', () => this.resolve(this.result))
-    this.on('error', this.reject)
   }
 
   _write(chunk: any, encoding: BufferEncoding, callback: (error?: Error) => void) {
-    this.result += chunk
+    this.chunks.push(Buffer.from(chunk))
+    callback()
+  }
+
+  _final(callback: (error?: Error) => void): void {
+    this.resolve(Buffer.concat(this.chunks))
     callback()
   }
 

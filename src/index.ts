@@ -1,11 +1,12 @@
 // @ts-ignore
 import words from 'an-array-of-english-words'
+import { createGunzip } from 'zlib'
 import { Context, Schema } from 'koishi'
 import { Stream } from 'stream'
-import { extract } from 'tar'
+import tar from 'tar-stream'
 import diff from 'lodash.difference'
 import sample from 'lodash.sample'
-import { StringWritable } from './stream'
+import { DummyWriter } from './stream'
 import {} from '@koishijs/translator'
 
 export const Config: Schema<{}> = Schema.object({})
@@ -38,13 +39,20 @@ async function getUnused(ctx: Context): Promise<string[]> {
   const { versions } = await http.get('/all-the-package-names')
   const latest: string = (Object.values(versions) as any[]).at(-1).dist.tarball
   const stream: Stream = await ctx.http.get(latest, { responseType: 'stream' })
-  const writable = new StringWritable()
-  stream.pipe(extract({
-    transform(entry) {
-      if (entry.path !== 'package/names.json') return
-      return writable
+  const writer = new DummyWriter()
+  const extract = tar.extract()
+  extract.on('entry', (headers, stream, next) => {
+    if (headers.name !== `package/names.json`) {
+      stream.on('end', next)
+      stream.resume()
+      return
     }
-  }))
-  const names: string[] = JSON.parse(await writable.promise)
+    stream.on('end', () => {
+      writer.end()
+    })
+    stream.pipe(writer)
+  })
+  stream.pipe(createGunzip()).pipe(extract)
+  const names: string[] = JSON.parse((await writer.promise).toString())
   return diff(words, names)
 }
