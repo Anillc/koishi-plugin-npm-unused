@@ -1,7 +1,7 @@
 {
   "name": "koishi-plugin-npm-unused",
   "description": "随机一个 npm 上尚未被占用的英文单词包名。",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "lib/index.js",
   "repository": "https://github.com/Anillc/koishi-plugin-npm-unused.git",
   "author": "Anillc <void@anillc.cn>",
