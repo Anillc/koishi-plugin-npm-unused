@@ -6,6 +6,7 @@
   "repository": "https://github.com/Anillc/koishi-plugin-npm-unused.git",
   "author": "Anillc <void@anillc.cn>",
   "license": "MIT",
+  "files": ["lib"],
   "koishi": {
     "service": {
       "optional": [
